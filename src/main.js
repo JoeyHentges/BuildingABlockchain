@@ -9,12 +9,13 @@ class Block {
    * @param {*} data the data held within the block
    * @param {*} previousHash the hash of the previous block on the chain
    */
-  constructor(index, timestamp, data, previousHash = '') {
+  constructor(index, data, previousHash = '') {
     this.index = index;
-    this.timestamp = timestamp;
+    this.timestamp = new Date();
     this.data = data;
     this.previousHash = previousHash;
     this.hash = this.calculateHash(); // the hash of the block
+    this.nonce = 0;
   }
 
   /**
@@ -26,8 +27,25 @@ class Block {
       this.index +
         this.previousHash +
         this.timestamp +
-        JSON.stringify(this.data)
+        JSON.stringify(this.data) +
+        this.nonce
     ).toString();
+  }
+
+  /**
+   *
+   * @param {*} difficulty how many zero's are required to start the hash ex: difficulty 5 = 0x00000xxx
+   */
+  mineBlock(difficulty) {
+    while (
+      this.hash.substring(0, difficulty) !== Array(difficulty + 1).join('0')
+    ) {
+      this.timestamp = new Date(); // update the date
+      this.nonce += 1; // increment the nonce in order to open up more hash options
+      this.hash = this.calculateHash();
+    }
+
+    console.log('Block Mined! ' + this.hash);
   }
 }
 
@@ -36,6 +54,7 @@ class Blockchain {
   /** Create an instance of the Blockchain */
   constructor() {
     this.chain = [this.createGenesisBlock()]; // an array of blocks
+    this.difficulty = 5; // how many zero's are required to start the hash ex: difficulty 5 = 0x00000xxx
   }
 
   /** Create the first block on the blockchain - with basic data for values. */
@@ -56,7 +75,7 @@ class Blockchain {
    */
   addBlock(newBlock) {
     newBlock.previousHash = this.getLatestBlock().hash;
-    newBlock.hash = newBlock.calculateHash();
+    newBlock.mineBlock(this.difficulty);
     this.chain.push(newBlock);
   }
 
@@ -82,14 +101,10 @@ class Blockchain {
 }
 
 let coin = new Blockchain();
+
+console.log('minning block 1');
 coin.addBlock(new Block(1, new Date(), { amount: 10 }));
+console.log('minning block 2');
 coin.addBlock(new Block(2, new Date(), { amount: 20 }));
+console.log('minning block 3');
 coin.addBlock(new Block(3, new Date(), { amount: 50 }));
-
-console.log(coin.isChainValid());
-
-coin.chain[1].data = { amount: 100 };
-
-console.log(coin.isChainValid());
-
-//console.log(JSON.stringify(coin, null, 4));
