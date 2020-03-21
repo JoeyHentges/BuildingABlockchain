@@ -59,7 +59,12 @@ class Blockchain {
 
   /** Create the first block on the blockchain - with basic data for values. */
   createGenesisBlock() {
-    return new Block(0, new Date(), 'Genesis Block', '0x0');
+    return new Block(
+      0,
+      new Date(),
+      'Genesis Block',
+      '0000000000000000000000000000000000000000000000000000000000000000'
+    );
   }
 
   /**
