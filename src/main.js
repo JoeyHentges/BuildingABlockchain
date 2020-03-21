@@ -30,3 +30,40 @@ class Block {
     ).toString();
   }
 }
+
+/** @class The Blockchain. */
+class Blockchain {
+  /** Create an instance of the Blockchain */
+  constructor() {
+    this.chain = [this.createGenesisBlock()]; // an array of blocks
+  }
+
+  /** Create the first block on the blockchain - with basic data for values. */
+  createGenesisBlock() {
+    return new Block(0, new Date(), 'Genesis Block', '0x0');
+  }
+
+  /**
+   * Get the last block on the chain.
+   * @return the last block on the blockchain
+   */
+  getLatestBlock() {
+    return this.chain[this.chain.length - 1];
+  }
+
+  /**
+   * Add a new block to the blockchain.
+   */
+  addBlock(newBlock) {
+    newBlock.previousHash = this.getLatestBlock().hash;
+    newBlock.hash = newBlock.calculateHash();
+    this.chain.push(newBlock);
+  }
+}
+
+let coin = new Blockchain();
+coin.addBlock(new Block(1, new Date(), { amount: 10 }));
+coin.addBlock(new Block(2, new Date(), { amount: 20 }));
+coin.addBlock(new Block(3, new Date(), { amount: 50 }));
+
+console.log(JSON.stringify(coin, null, 4));
