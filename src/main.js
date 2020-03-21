@@ -100,6 +100,9 @@ class Blockchain {
   }
 }
 
+module.exports.Block = Block;
+module.exports.Blockchain = Blockchain;
+/*
 let coin = new Blockchain();
 
 console.log('minning block 1');
@@ -108,3 +111,4 @@ console.log('minning block 2');
 coin.addBlock(new Block(2, new Date(), { amount: 20 }));
 console.log('minning block 3');
 coin.addBlock(new Block(3, new Date(), { amount: 50 }));
+*/
