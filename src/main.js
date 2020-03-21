@@ -1,3 +1,5 @@
+const SHA256 = require('crypto-js/sha256');
+
 /** @class A Block on the blockchain. */
 class Block {
   /**
@@ -12,11 +14,19 @@ class Block {
     this.timestamp = timestamp;
     this.data = data;
     this.previousHash = previousHash;
-    this.hash = ''; // the hash of the block
+    this.hash = this.calculateHash(); // the hash of the block
   }
 
   /**
-   * Use the SHA256 hash function to create a hash of the block.
+   * Use the SHA256 hash function to calculate the hash of the block.
+   * @return the hash of the block
    */
-  calculateHash() {}
+  calculateHash() {
+    return SHA256(
+      this.index +
+        this.previousHash +
+        this.timestamp +
+        JSON.stringify(this.data)
+    ).toString();
+  }
 }
