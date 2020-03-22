@@ -45,6 +45,17 @@ class Block {
 
     console.log('Block Mined! ' + this.hash);
   }
+
+  /** Verify all the transactions in the Block are valid. */
+  hasValidTransaction() {
+    for (const tx of this.transactions) {
+      // check if transaction is valid
+      if (!tx.isValid()) {
+        return false;
+      }
+    }
+    return true;
+  }
 }
 
 module.exports.Block = Block;
