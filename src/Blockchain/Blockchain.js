@@ -49,6 +49,7 @@ class Blockchain {
     this.chain.push(block);
 
     this.pendingTransactions = [];
+    return block;
   }
 
   /**

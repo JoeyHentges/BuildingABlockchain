@@ -11,10 +11,15 @@ class Transaction {
    * @param {float} amount the amount being transfered
    */
   constructor(fromAddress, toAddress, amount, contractCode = null) {
+    this.timestamp = new Date();
     this.fromAddress = fromAddress;
     this.toAddress = toAddress;
     this.amount = amount;
     this.contractCode = contractCode;
+    if (contractCode) {
+      this.contractInstance = new contractCode();
+    }
+    this.hash = this.calculateHash();
   }
 
   /**
@@ -26,6 +31,7 @@ class Transaction {
       this.fromAddress +
         this.toAddress +
         this.amount +
+        this.timestamp +
         JSON.stringify(this.contractCode)
     ).toString();
   }
