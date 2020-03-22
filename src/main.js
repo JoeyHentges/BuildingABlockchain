@@ -1,18 +1,31 @@
 const SHA256 = require('crypto-js/sha256');
 
+/** @class A Transaction in the Block. */
+class Transaction {
+  /**
+   * Creates an instance of a Transaction.
+   * @param {*} fromAddress the address the amount is transfering from
+   * @param {*} toAddress the address the amount to transfering to
+   * @param {*} amount the amount being transfered
+   */
+  constructor(fromAddress, toAddress, amount) {
+    this.fromAddress = fromAddress;
+    this.toAddress = toAddress;
+    this.amount = amount;
+  }
+}
+
 /** @class A Block on the blockchain. */
 class Block {
   /**
    * Creates in instance of a Block.
-   * @param {*} index the number this block is on the chain.
    * @param {*} timestamp the time this block was minned.
    * @param {*} data the data held within the block
    * @param {*} previousHash the hash of the previous block on the chain
    */
-  constructor(index, data, previousHash = '') {
-    this.index = index;
+  constructor(transactions, previousHash = '') {
     this.timestamp = new Date();
-    this.data = data;
+    this.transactions = transactions;
     this.previousHash = previousHash;
     this.hash = this.calculateHash(); // the hash of the block
     this.nonce = 0;
@@ -54,14 +67,14 @@ class Blockchain {
   /** Create an instance of the Blockchain */
   constructor() {
     this.chain = [this.createGenesisBlock()]; // an array of blocks
-    this.difficulty = 5; // how many zero's are required to start the hash ex: difficulty 5 = 0x00000xxx
+    this.difficulty = 2; // how many zero's are required to start the hash ex: difficulty 5 = 0x00000xxx
+    this.pendingTransactions = []; // the list of available transactions to be added to the blocks
+    this.miningReward = 100; // how many 'coins' should be given to the miner mining the Block
   }
 
   /** Create the first block on the blockchain - with basic data for values. */
   createGenesisBlock() {
     return new Block(
-      0,
-      new Date(),
       'Genesis Block',
       '0000000000000000000000000000000000000000000000000000000000000000'
     );
@@ -76,12 +89,27 @@ class Blockchain {
   }
 
   /**
-   * Add a new block to the blockchain.
+   * Mine a block on the blockchain.
+   * @param {*} miningRewardAddress the miner mining the block - send the reward to this address
    */
-  addBlock(newBlock) {
-    newBlock.previousHash = this.getLatestBlock().hash;
-    newBlock.mineBlock(this.difficulty);
-    this.chain.push(newBlock);
+  minePendingTransactions(miningRewardAddress) {
+    let block = new Block(this.pendingTransactions);
+    block.mineBlock(this.difficulty);
+
+    console.log('Block successfully mined!');
+    this.chain.push(block);
+
+    this.pendingTransactions = [
+      new Transaction(null, miningRewardAddress, this.miningReward)
+    ]; // reset the pending transactions and add the mining reward
+  }
+
+  /**
+   * Add a new transaction to the list of pending transactions.
+   * @param {*} transaction the transaction to be added to the list
+   */
+  createTransaction(transaction) {
+    this.pendingTransactions.push(transaction);
   }
 
   /**
@@ -107,13 +135,3 @@ class Blockchain {
 
 module.exports.Block = Block;
 module.exports.Blockchain = Blockchain;
-/*
-let coin = new Blockchain();
-
-console.log('minning block 1');
-coin.addBlock(new Block(1, new Date(), { amount: 10 }));
-console.log('minning block 2');
-coin.addBlock(new Block(2, new Date(), { amount: 20 }));
-console.log('minning block 3');
-coin.addBlock(new Block(3, new Date(), { amount: 50 }));
-*/
