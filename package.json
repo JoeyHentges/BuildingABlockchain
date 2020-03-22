@@ -1,0 +1,20 @@
+{
+  "name": "buildingablockchain",
+  "version": "0.0.1",
+  "description": "Building a blockchain from scratch in Javascript.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [
+    "Blockchain",
+    "JavaScript"
+  ],
+  "author": "Joseph Hentges",
+  "license": "ISC",
+  "dependencies": {
+    "crypto-js": "^4.0.0",
+    "elliptic": "^6.5.2",
+    "mocha": "^7.1.1"
+  }
+}
