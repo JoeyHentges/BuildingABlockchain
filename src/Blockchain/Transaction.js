@@ -10,10 +10,11 @@ class Transaction {
    * @param {string} toAddress the address the amount to transfering to
    * @param {float} amount the amount being transfered
    */
-  constructor(fromAddress, toAddress, amount) {
+  constructor(fromAddress, toAddress, amount, contractCode = null) {
     this.fromAddress = fromAddress;
     this.toAddress = toAddress;
     this.amount = amount;
+    this.contractCode = contractCode;
   }
 
   /**
@@ -21,7 +22,12 @@ class Transaction {
    * @return {string}
    */
   calculateHash() {
-    return SHA256(this.fromAddress + this.toAddress + this.amount).toString();
+    return SHA256(
+      this.fromAddress +
+        this.toAddress +
+        this.amount +
+        JSON.stringify(this.contractCode)
+    ).toString();
   }
 
   /**
