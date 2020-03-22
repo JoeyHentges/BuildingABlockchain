@@ -6,11 +6,8 @@ const router = express.Router();
 const EC = require('elliptic').ec;
 const ec = new EC('secp256k1');
 
-const { coin } = require('../../app');
-const { Transaction } = require('../../src/Blockchain/Transaction');
-
-// Routes from other files Bringing in routes from 'apps'.
-//router.use('/', require('../../apps/_/apps').router);
+const { coin } = require('../app');
+const { Transaction } = require('../src/Blockchain/Transaction');
 
 router.get('/mine_block', (req, res) => {
   const { minerAddress } = req.body;
@@ -56,7 +53,7 @@ router.post('/add_transaction', async (req, res) => {
     if (err) throw err;
 
     console.log('The file was succesfully saved!');
-    const { contract } = require('../../trash/script_executable');
+    const { contract } = require('../trash/script_executable');
 
     const tx = new Transaction(
       walletAddress,

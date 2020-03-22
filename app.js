@@ -19,4 +19,4 @@ module.exports.app = app;
 module.exports.coin = coin;
 
 // Add Routes to the app
-app.use('/', require('./main/routes/routes').router);
+app.use('/', require('./main/routes').router);
