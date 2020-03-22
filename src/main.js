@@ -1,20 +1,28 @@
+const EC = require('elliptic').ec;
+const ec = new EC('secp256k1');
+
 const { Block } = require('./Blockchain/Block');
 const { Blockchain } = require('./Blockchain/Blockchain');
 const { Transaction } = require('./Blockchain/Transaction');
 
+const myKey = ec.keyFromPrivate(
+  '6a6f12d841d959912d373e7759bd397f4fe80c51284a457269025fd87b68cca6'
+);
+const myWalletAddress = myKey.getPublic('hex');
+
 let coin = new Blockchain();
 
-coin.createTransaction(new Transaction('address1', 'address2', 100));
-coin.createTransaction(new Transaction('address1', 'address3', 20));
-coin.createTransaction(new Transaction('address2', 'address1', 40));
+const tx1 = new Transaction(myWalletAddress, 'public key goes here', 10);
+tx1.signTransaction(myKey);
+coin.addTransaction(tx1);
 
 console.log('starting a minier');
-coin.minePendingTransactions('miner-address');
+console.log('starting a minier');
+coin.minePendingTransactions(myWalletAddress);
 console.log(
-  'balance of miner-address is: ' + coin.getBalanceOfAddress('miner-address')
+  'balance of miner-address is: ' + coin.getBalanceOfAddress(myWalletAddress)
 );
-console.log('starting a minier again');
-coin.minePendingTransactions('miner-address');
-console.log(
-  'balance of miner-address is: ' + coin.getBalanceOfAddress('miner-address')
-);
+
+coin.chain[1].transactions[0].amount = 1;
+
+console.log('Is chain valid? ' + coin.isChainValid());

@@ -31,7 +31,7 @@ class Block {
   }
 
   /**
-   *
+   * Starts the mining process on the block.
    * @param {*} difficulty how many zero's are required to start the hash ex: difficulty 5 = 0x00000xxx
    */
   mineBlock(difficulty) {

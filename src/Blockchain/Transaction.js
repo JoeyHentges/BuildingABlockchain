@@ -16,7 +16,10 @@ class Transaction {
     this.amount = amount;
   }
 
-  /** Calcuate the SHA256 hash of the transaction. */
+  /**
+   * Calcuate the SHA256 hash of the transaction.
+   * @return {string}
+   */
   calculateHash() {
     return SHA256(this.fromAddress + this.toAddress + this.amount).toString();
   }
@@ -35,7 +38,10 @@ class Transaction {
     this.signature = signature.toDER('hex');
   }
 
-  /** Verify if the transaction is a valid (signed) transaction */
+  /**
+   * Verify if the transaction is a valid (signed) transaction
+   * @returns {boolean}
+   */
   isValid() {
     // transaction is a mining reward
     if (this.fromAddress === null) {

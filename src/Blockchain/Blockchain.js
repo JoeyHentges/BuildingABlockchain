@@ -32,15 +32,23 @@ class Blockchain {
    * @param {*} miningRewardAddress the miner mining the block - send the reward to this address
    */
   minePendingTransactions(miningRewardAddress) {
-    let block = new Block(this.pendingTransactions);
+    const rewardTx = new Transaction(
+      null,
+      miningRewardAddress,
+      this.miningReward
+    );
+    this.pendingTransactions.push(rewardTx);
+
+    const block = new Block(
+      this.pendingTransactions,
+      this.getLatestBlock().hash
+    );
     block.mineBlock(this.difficulty);
 
     console.log('Block successfully mined!');
     this.chain.push(block);
 
-    this.pendingTransactions = [
-      new Transaction(null, miningRewardAddress, this.miningReward)
-    ]; // reset the pending transactions and add the mining reward
+    this.pendingTransactions = [];
   }
 
   /**
