@@ -47,7 +47,16 @@ class Blockchain {
    * Add a new transaction to the list of pending transactions.
    * @param {*} transaction the transaction to be added to the list
    */
-  createTransaction(transaction) {
+  addTransaction(transaction) {
+    // check if the from address and to address are filled in
+    if (!transaction.fromAddress || !transaction.toAddress) {
+      throw new Error('Transaction must include a from and to address!');
+    }
+    // verify the transaction is valid
+    if (!transaction.isValid()) {
+      throw new Error('Cannot add invalid transactions to the chain!');
+    }
+
     this.pendingTransactions.push(transaction);
   }
 
@@ -80,6 +89,10 @@ class Blockchain {
     for (let i = 1; i < this.chain.length; i += 1) {
       const currentBlock = this.chain[i];
       const previousBlock = this.chain[i - 1];
+      // check if the block has all valid transactions
+      if (!currentBlock.hasValidTransactions()) {
+        return false;
+      }
       // check if each block's hash is actually what it should be - if not, false
       if (currentBlock.hash !== currentBlock.calculateHash()) {
         return false;

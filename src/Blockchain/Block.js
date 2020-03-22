@@ -47,7 +47,7 @@ class Block {
   }
 
   /** Verify all the transactions in the Block are valid. */
-  hasValidTransaction() {
+  hasValidTransactions() {
     for (const tx of this.transactions) {
       // check if transaction is valid
       if (!tx.isValid()) {
