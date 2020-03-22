@@ -1,7 +1,6 @@
 const EC = require('elliptic').ec;
 const ec = new EC('secp256k1');
 
-const { Block } = require('./Blockchain/Block');
 const { Blockchain } = require('./Blockchain/Blockchain');
 const { Transaction } = require('./Blockchain/Transaction');
 
@@ -21,14 +20,15 @@ const tx2 = new Transaction(
   'public key goes here',
   0,
   class ContractTest {
+    #greeting;
     constructor() {
-      this.greeting = 'Hello world!';
+      this.#greeting = 'Hello world!';
     }
     setGreeting(greeting) {
-      this.greeting = greeting;
+      this.#greeting = greeting;
     }
     getGreeting() {
-      return this.greeting;
+      return this.#greeting;
     }
   }
 );
@@ -47,6 +47,7 @@ console.log(JSON.stringify(coin, null, 4));
 
 const code = coin.chain[1].transactions[1].contractCode;
 console.log(code);
+console.log(code.toString());
 
 const temp = new code();
 console.log(temp.getGreeting());
