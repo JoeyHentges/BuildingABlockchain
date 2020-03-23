@@ -131,24 +131,26 @@ class Blockchain {
    * If longer than the current chain, retreive it and swap with the current one.
    */
   async replaceChain() {
-    let newChain = null;
     let chainLength = this.chain.length;
+    let nodeOfLargestChain = null;
     for (const node of this.network) {
       const response = await superagent
-        .get(`${node}/get_chain`)
+        .get(`${node}/get_chain_length`)
         .then(res => res);
-      if (response.status === 200) {
-        const nodeChain = JSON.parse(response.text);
-        if (nodeChain.length > chainLength) {
-          newChain = nodeChain.chain;
-          chainLength = nodeChain.length;
-        }
+      const nodeChain = JSON.parse(response.text);
+      if (response.status === 200 && nodeChain.length > chainLength) {
+        chainLength = nodeChain.length;
+        nodeOfLargestChain = node;
       }
     }
-    if (newChain !== null) {
-      this.chain = newChain.chain;
-      this.contracts = newChain.contracts;
-      this.pendingTransactions = this.pendingTransactions;
+    if (nodeOfLargestChain !== null) {
+      const response = await superagent
+        .get(`${nodeOfLargestChain}/get_chain`)
+        .then(res => res);
+      const nodeChain = JSON.parse(response.text).chain;
+      this.chain = nodeChain.chain;
+      this.contracts = nodeChain.contracts;
+      this.pendingTransactions = nodeChain.pendingTransactions;
       this.setContractInstances();
     }
     return replaced;

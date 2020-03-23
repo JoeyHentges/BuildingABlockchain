@@ -26,6 +26,12 @@ router.get('/get_chain', (req, res) => {
   });
 });
 
+router.get('/get_chain_length', (req, res) => {
+  res.status(200).send({
+    length: coin.chain.length
+  });
+});
+
 router.get('/is_valid', (req, res) => {
   const is_valid = coin.isChainValid();
   if (is_valid) {
