@@ -126,6 +126,10 @@ class Blockchain {
     return true; // the block is valid
   }
 
+  /**
+   * Loop through all of the connected nodes in the network and find which has the longest chain.
+   * If longer than the current chain, retreive it and swap with the current one.
+   */
   async replaceChain() {
     let newChain = null;
     let chainLength = this.chain.length;
@@ -150,6 +154,10 @@ class Blockchain {
     return replaced;
   }
 
+  /**
+   * Loop through all of the contracts in the new chain and set their instances.
+   * Specifically, setting variables in the instances.
+   */
   async setContractInstances() {
     // loop over all of the contracts in the contracts list
     for (const contractHash in this.contracts) {
@@ -179,6 +187,12 @@ class Blockchain {
     }
   }
 
+  /**
+   * Helper function for setContractInstances()
+   * Convert a json object to an array of parameters.
+   * @param {*} json the json object
+   * @return {array} the list of values
+   */
   json2array(json) {
     var result = [];
     var keys = Object.keys(json);
