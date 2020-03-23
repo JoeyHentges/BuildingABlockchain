@@ -1,3 +1,5 @@
+const superagent = require('superagent');
+var fs = require('fs');
 const { Block } = require('./Block');
 const { Transaction } = require('./Transaction');
 
@@ -9,6 +11,7 @@ class Blockchain {
     this.difficulty = 2; // how many zero's are required to start the hash ex: difficulty 5 = 0x00000xxx
     this.pendingTransactions = []; // the list of available transactions to be added to the blocks
     this.miningReward = 100; // how many 'coins' should be given to the miner mining the Block
+    this.contracts = {}; // create an empty 'Hashmap' of contracts - used for easy picking of contracts from blocks - the block index they're in
   }
 
   /** Create the first block on the blockchain - with basic data for values. */
@@ -38,6 +41,14 @@ class Blockchain {
       this.miningReward
     );
     this.pendingTransactions.push(rewardTx);
+
+    // get the contracts (hashes) in the list of transactions and add them to the list of contracts in the blockchain contracts list
+    for (const transaction of this.pendingTransactions) {
+      // if there is code for a contract
+      if (transaction.contractCode) {
+        this.contracts[transaction.hash] = this.chain.length;
+      }
+    }
 
     const block = new Block(
       this.pendingTransactions,
@@ -112,6 +123,71 @@ class Blockchain {
       }
     }
     return true; // the block is valid
+  }
+
+  async replaceChain() {
+    const network = ['http://localhost:3000'];
+    let newChain = null;
+    let chainLength = this.chain.length;
+    let replaced = false;
+    for (const node of network) {
+      const response = await superagent
+        .get(`${node}/get_chain`)
+        .then(res => res);
+      if (response.status === 200) {
+        const nodeChain = JSON.parse(response.text);
+        if (nodeChain.length > chainLength) {
+          newChain = nodeChain.chain;
+          chainLength = nodeChain.length;
+          replaced = true;
+        }
+      }
+    }
+    if (replaced) {
+      this.chain = newChain.chain;
+      this.contracts = newChain.contracts;
+      this.pendingTransactions = this.pendingTransactions;
+      this.setContractInstances();
+    }
+    return replaced;
+  }
+
+  async setContractInstances() {
+    // loop over all of the contracts in the contracts list
+    for (const contractHash in this.contracts) {
+      const blockIndex = this.contracts[contractHash];
+      const block = this.chain[blockIndex];
+      for (const transaction of block.transactions) {
+        if (transaction.hash === contractHash) {
+          var filepath = 'trash/script_executable.js';
+          var fileContent = `
+            module.exports.contract = ${transaction.contractCode}
+          `;
+          const contractVariables = transaction.contractInstance;
+          console.log(transaction.contractCode);
+
+          await fs.unlink(filepath, async () => {
+            await fs.writeFile(filepath, fileContent, err => {
+              if (err) throw err;
+              const { contract } = require('../../trash/script_executable');
+              let result = this.json2array(contractVariables);
+              const instance = new contract();
+              instance.applyParamaeters(...result);
+              transaction.contractInstance = instance;
+            });
+          });
+        }
+      }
+    }
+  }
+
+  json2array(json) {
+    var result = [];
+    var keys = Object.keys(json);
+    keys.forEach(function(key) {
+      result.push(json[key]);
+    });
+    return result;
   }
 }
 

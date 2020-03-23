@@ -21,7 +21,7 @@ router.get('/mine_block', (req, res) => {
 
 router.get('/get_chain', (req, res) => {
   res.status(200).send({
-    chain: coin.chain,
+    chain: coin,
     length: coin.chain.length
   });
 });
@@ -48,7 +48,7 @@ router.post('/add_transaction', async (req, res) => {
   var fileContent = `
     module.exports.contract = ${contractCode}
   `;
-
+  await fs.unlinkSync(filepath);
   await fs.writeFile(filepath, fileContent, err => {
     if (err) throw err;
 
@@ -59,7 +59,8 @@ router.post('/add_transaction', async (req, res) => {
       walletAddress,
       toAddress,
       Number(amount),
-      contract
+      contract,
+      contractCode
     );
     tx.signTransaction(key);
     coin.addTransaction(tx);
@@ -70,14 +71,20 @@ router.post('/add_transaction', async (req, res) => {
   });
 });
 
+router.get('/replace-chain', async (req, res) => {
+  const replaced = await coin.replaceChain();
+  res.status(200).send('replaced chain ' + replaced);
+});
+
 router.post('/contract_function', (req, res) => {
   const { transactionHash, func } = req.body;
   const chain = coin.chain;
-  for (const block of chain) {
-    for (const transaction of block.transactions) {
-      if (transaction.hash === transactionHash) {
-        res.status(200).send(eval(`transaction.contractInstance.${func}`));
-      }
+  const contracts = coin.contracts;
+  const blockIndex = contracts[transactionHash];
+  const block = chain[blockIndex];
+  for (const transaction of block.transactions) {
+    if (transaction.hash === transactionHash) {
+      res.status(200).send(eval(`transaction.contractInstance.${func}`));
     }
   }
 });

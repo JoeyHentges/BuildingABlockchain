@@ -9,15 +9,24 @@ class Transaction {
    * @param {string} fromAddress the address the amount is transfering from
    * @param {string} toAddress the address the amount to transfering to
    * @param {float} amount the amount being transfered
+   * @param {class} contract the class of the contract
+   * @param {string} contractCode the code (string) of the contract
    */
-  constructor(fromAddress, toAddress, amount, contractCode = null) {
+  constructor(
+    fromAddress,
+    toAddress,
+    amount,
+    contract = null,
+    contractCode = null
+  ) {
     this.timestamp = new Date();
     this.fromAddress = fromAddress;
     this.toAddress = toAddress;
     this.amount = amount;
-    this.contractCode = contractCode;
-    if (contractCode) {
-      this.contractInstance = new contractCode();
+    // if there is contract code
+    if (contract) {
+      this.contractCode = contractCode; // save a copy of the code
+      this.contractInstance = new contract(); // create an instance of the contract
     }
     this.hash = this.calculateHash();
   }
