@@ -153,7 +153,7 @@ class Blockchain {
       this.pendingTransactions = nodeChain.pendingTransactions;
       this.setContractInstances();
     }
-    return replaced;
+    return nodeOfLargestChain !== null;
   }
 
   /**

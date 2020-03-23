@@ -3,7 +3,7 @@ class People {
   constructor(people = []) {
     this.people = people;
   }
-  applyParamaeters(people) {
+  applyParameters(people) {
     this.people = people;
   }
   addPerson(person) {
