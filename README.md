@@ -6,4 +6,5 @@
 2. When notifying other nodes, add their network nodes to your network
 3. Notify other nodes of new transactions
 4. Find a better way to create instances of contracts - not creating a file
-5. ...
+5. Delete script_executable.js file after using it
+6. ...
