@@ -48,30 +48,31 @@ router.post('/add_transaction', async (req, res) => {
   var fileContent = `
     module.exports.contract = ${contractCode}
   `;
-  await fs.unlinkSync(filepath);
-  await fs.writeFile(filepath, fileContent, err => {
-    if (err) throw err;
+  await fs.unlink(filepath, async () => {
+    await fs.writeFile(filepath, fileContent, err => {
+      if (err) throw err;
 
-    console.log('The file was succesfully saved!');
-    const { contract } = require('../trash/script_executable');
+      console.log('The file was succesfully saved!');
+      const { contract } = require('../trash/script_executable');
 
-    const tx = new Transaction(
-      walletAddress,
-      toAddress,
-      Number(amount),
-      contract,
-      contractCode
-    );
-    tx.signTransaction(key);
-    coin.addTransaction(tx);
-    res.status(200).send({
-      message: 'Successfully added a transaction!',
-      transactionHash: tx.hash
+      const tx = new Transaction(
+        walletAddress,
+        toAddress,
+        Number(amount),
+        contract,
+        contractCode
+      );
+      tx.signTransaction(key);
+      coin.addTransaction(tx);
+      res.status(200).send({
+        message: 'Successfully added a transaction!',
+        transactionHash: tx.hash
+      });
     });
   });
 });
 
-router.get('/replace-chain', async (req, res) => {
+router.get('/replace_chain', async (req, res) => {
   const replaced = await coin.replaceChain();
   res.status(200).send('replaced chain ' + replaced);
 });
