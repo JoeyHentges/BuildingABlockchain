@@ -12,6 +12,7 @@ class Blockchain {
     this.pendingTransactions = []; // the list of available transactions to be added to the blocks
     this.miningReward = 100; // how many 'coins' should be given to the miner mining the Block
     this.contracts = {}; // create an empty 'Hashmap' of contracts - used for easy picking of contracts from blocks - the block index they're in
+    this.network = ['http://localhost:3000'];
   }
 
   /** Create the first block on the blockchain - with basic data for values. */
@@ -126,11 +127,9 @@ class Blockchain {
   }
 
   async replaceChain() {
-    const network = ['http://localhost:3000'];
     let newChain = null;
     let chainLength = this.chain.length;
-    let replaced = false;
-    for (const node of network) {
+    for (const node of this.network) {
       const response = await superagent
         .get(`${node}/get_chain`)
         .then(res => res);
@@ -139,11 +138,10 @@ class Blockchain {
         if (nodeChain.length > chainLength) {
           newChain = nodeChain.chain;
           chainLength = nodeChain.length;
-          replaced = true;
         }
       }
     }
-    if (replaced) {
+    if (newChain !== null) {
       this.chain = newChain.chain;
       this.contracts = newChain.contracts;
       this.pendingTransactions = this.pendingTransactions;
@@ -172,7 +170,7 @@ class Blockchain {
               const { contract } = require('../../trash/script_executable');
               let result = this.json2array(contractVariables);
               const instance = new contract();
-              instance.applyParamaeters(...result);
+              instance.applyParameters(...result);
               transaction.contractInstance = instance;
             });
           });
