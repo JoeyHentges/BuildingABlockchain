@@ -1,13 +1,15 @@
-class Protected {
-  protectedKey = 'pass1234';
-  firstName;
-  lastName;
+class Greeting {
+  greeting;
   constructor() {
-    this.firstName = 'Joey';
-    this.lastName = 'Hentges';
+    this.greeting = 'Hello World!';
   }
-  applyParameters(firstName, lastName) {
-    this.firstName = firstName;
-    this.lastName = lastName;
+  set applyParameters(greeting = greeting) {
+    this.greeting = greeting;
+  }
+  set setGreeting(greeting = greeting) {
+    this.greeting = greeting;
+  }
+  get getGreeting() {
+    return this.greeting;
   }
 }

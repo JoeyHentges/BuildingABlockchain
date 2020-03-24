@@ -13,3 +13,7 @@ class Greeting {
     return this.greeting;
   }
 }
+
+const temp = new Greeting();
+temp.setGreeting();
+console.log(temp);
