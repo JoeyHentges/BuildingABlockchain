@@ -1,13 +1,12 @@
 class People {
-  people;
-  constructor(people = []) {
-    this.people = people;
+  constructor() {
+    this.people = [];
   }
   applyParameters(people) {
-    this.people = people;
+    this.people = people ? people : this.people;
   }
   addPerson(person) {
-    this.people.push(person);
+    if (person) { this.people.push(person); }
   }
   getPersonByIndex(index) {
     return this.people[index];

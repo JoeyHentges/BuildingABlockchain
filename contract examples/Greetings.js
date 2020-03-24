@@ -1,5 +1,4 @@
 class Greeting {
-  greeting;
   constructor() {
     this.greeting = 'Hello World!';
   }

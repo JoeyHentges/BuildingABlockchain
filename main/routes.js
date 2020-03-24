@@ -73,7 +73,6 @@ router.post('/add_transaction', async (req, res) => {
   }
   if (contractCode) {
     var fixedContract = `(${contractCode})`;
-
     const tx = new Transaction(
       walletAddress,
       toAddress,
@@ -122,19 +121,7 @@ router.post('/contract_function', (req, res) => {
   const block = chain[blockIndex];
   for (const transaction of block.transactions) {
     if (transaction.hash === transactionHash) {
-      const temp = `transaction.contract.contractInstance.${func}`.split(
-        '('
-      )[0];
-      const temp2 = eval(`${temp}()`);
-      if (typeof temp2 === 'undefined') {
-        res.status(400).send({
-          message:
-            'Cannot call setter functions! You must use a transaction to set a value.'
-        });
-        return;
-      } else {
-        res.status(200).send(eval(`${temp}()`));
-      }
+      res.status(200).send(eval(`transaction.contract.contractInstance.${func}`));
     }
   }
 });
