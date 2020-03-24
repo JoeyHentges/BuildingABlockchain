@@ -53,9 +53,8 @@ class Blockchain {
         const block = this.chain[blockIndex];
         for (const trans of block.transactions) {
           if (trans.hash === transaction.contractFunction.hash) {
-            eval(
-              `trans.contract.contractInstance.${transaction.contractFunction.function}`
-            );
+            const contract = trans.contract.contractInstance;
+            eval(`contract.${transaction.contractFunction.function}`);
           }
         }
       }
@@ -170,7 +169,7 @@ class Blockchain {
    * Loop through all of the contracts in the new chain and set their instances.
    * Specifically, setting variables in the instances.
    */
-  async setContractInstances() {
+  setContractInstances() {
     // loop over all of the contracts in the contracts list
     for (const contractHash in this.contracts) {
       const blockIndex = this.contracts[contractHash];
