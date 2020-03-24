@@ -3,7 +3,7 @@ class Greeting {
   constructor() {
     this.greeting = 'Hello World!';
   }
-  applyParamaeters(greeting) {
+  applyParameters(greeting) {
     this.greeting = greeting;
   }
   setGreeting(greeting) {

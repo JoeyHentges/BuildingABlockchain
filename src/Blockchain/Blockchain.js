@@ -1,5 +1,4 @@
 const superagent = require('superagent');
-var fs = require('fs');
 const { Block } = require('./Block');
 const { Transaction } = require('./Transaction');
 
@@ -167,23 +166,36 @@ class Blockchain {
       const block = this.chain[blockIndex];
       for (const transaction of block.transactions) {
         if (transaction.hash === contractHash) {
+          var fixedContract = `(${transaction.contractCode})`;
+          const contractVariables = this.json2array(
+            transaction.contractInstance
+          );
+
+          const contract = eval(fixedContract);
+          const instance = new contract();
+          instance.applyParameters(...contractVariables);
+          transaction.contractInstance = instance;
+          /*
           var filepath = 'trash/script_executable.js';
           var fileContent = `
             module.exports.contract = ${transaction.contractCode}
           `;
-          const contractVariables = transaction.contractInstance;
+          const contractVariables = this.json2array(
+            transaction.contractInstance
+          );
           console.log(transaction.contractCode);
 
           await fs.unlink(filepath, async () => {
             await fs.writeFile(filepath, fileContent, err => {
               if (err) throw err;
-              const { contract } = require('../../trash/script_executable');
+              const contract = eval(fixedContract);
               let result = this.json2array(contractVariables);
               const instance = new contract();
-              instance.applyParameters(...result);
+              instance.applyParameters(...contractVariables);
               transaction.contractInstance = instance;
             });
           });
+          */
         }
       }
     }
