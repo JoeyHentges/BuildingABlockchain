@@ -45,8 +45,19 @@ class Blockchain {
     // get the contracts (hashes) in the list of transactions and add them to the list of contracts in the blockchain contracts list
     for (const transaction of this.pendingTransactions) {
       // if there is code for a contract
-      if (transaction.contractCode) {
+      if (transaction.contract) {
         this.contracts[transaction.hash] = this.chain.length;
+      } else if (transaction.contractFunction) {
+        // if instead this transaction is a contract function
+        const blockIndex = this.contracts[transaction.contractFunction.hash];
+        const block = this.chain[blockIndex];
+        for (const trans of block.transactions) {
+          if (trans.hash === transaction.contractFunction.hash) {
+            eval(
+              `trans.contract.contractInstance.${transaction.contractFunction.function}`
+            );
+          }
+        }
       }
     }
 
@@ -166,36 +177,15 @@ class Blockchain {
       const block = this.chain[blockIndex];
       for (const transaction of block.transactions) {
         if (transaction.hash === contractHash) {
-          var fixedContract = `(${transaction.contractCode})`;
+          var fixedContract = `(${transaction.contract.contractCode})`;
           const contractVariables = this.json2array(
-            transaction.contractInstance
+            transaction.contract.contractInstance
           );
 
           const contract = eval(fixedContract);
           const instance = new contract();
           instance.applyParameters(...contractVariables);
-          transaction.contractInstance = instance;
-          /*
-          var filepath = 'trash/script_executable.js';
-          var fileContent = `
-            module.exports.contract = ${transaction.contractCode}
-          `;
-          const contractVariables = this.json2array(
-            transaction.contractInstance
-          );
-          console.log(transaction.contractCode);
-
-          await fs.unlink(filepath, async () => {
-            await fs.writeFile(filepath, fileContent, err => {
-              if (err) throw err;
-              const contract = eval(fixedContract);
-              let result = this.json2array(contractVariables);
-              const instance = new contract();
-              instance.applyParameters(...contractVariables);
-              transaction.contractInstance = instance;
-            });
-          });
-          */
+          transaction.contract.contractInstance = instance;
         }
       }
     }

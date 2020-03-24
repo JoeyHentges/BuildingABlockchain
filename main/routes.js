@@ -44,25 +44,62 @@ router.get('/is_valid', (req, res) => {
 });
 
 router.post('/add_transaction', async (req, res) => {
-  const { privateKey, toAddress, amount, contractCode } = req.body;
+  const {
+    privateKey,
+    toAddress,
+    amount,
+    contractCode,
+    contractHash,
+    contractFunction
+  } = req.body;
   const key = ec.keyFromPrivate(privateKey);
   const walletAddress = key.getPublic('hex');
+  if (!contractHash && !contractFunction && !contractCode) {
+    const tx = new Transaction(walletAddress, toAddress, Number(amount));
+    tx.signTransaction(key);
+    coin.addTransaction(tx);
+    res.status(200).send({
+      message: 'Successfully added a transaction!',
+      transactionHash: tx.hash
+    });
+    return;
+  }
+  if (contractCode) {
+    var fixedContract = `(${contractCode})`;
 
-  var fixedContract = `(${contractCode})`;
+    const tx = new Transaction(
+      walletAddress,
+      toAddress,
+      Number(amount),
+      eval(fixedContract),
+      contractCode
+    );
+    tx.signTransaction(key);
+    coin.addTransaction(tx);
+    res.status(200).send({
+      message: 'Successfully added a contract!',
+      transactionHash: tx.hash
+    });
+    return;
+  }
 
   const tx = new Transaction(
     walletAddress,
     toAddress,
     Number(amount),
-    eval(fixedContract),
-    contractCode
+    null,
+    null,
+    contractHash,
+    contractFunction
   );
   tx.signTransaction(key);
   coin.addTransaction(tx);
   res.status(200).send({
-    message: 'Successfully added a transaction!',
+    message: 'Successfully commit a contract transaction!',
+    contractHash: contractHash,
     transactionHash: tx.hash
   });
+  return;
 });
 
 router.get('/replace_chain', async (req, res) => {
@@ -78,7 +115,9 @@ router.post('/contract_function', (req, res) => {
   const block = chain[blockIndex];
   for (const transaction of block.transactions) {
     if (transaction.hash === transactionHash) {
-      res.status(200).send(eval(`transaction.contractInstance.${func}`));
+      res
+        .status(200)
+        .send(eval(`transaction.contract.contractInstance.${func}`));
     }
   }
 });

@@ -2,9 +2,8 @@
 
 ### Need to add
 
-1. Notify other nodes of minned blocks.
-2. When notifying other nodes, add their network nodes to your network
-3. Notify other nodes of new transactions
-4. Find a better way to create instances of contracts - not creating a file
-5. Delete script_executable.js file after using it
-6. ...
+1. Convert 'Assignment' functions in contracts to transactions
+2. Notify other nodes of minned blocks.
+3. When notifying other nodes, add their network nodes to your network
+4. Notify other nodes of new transactions
+5. ...
