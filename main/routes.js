@@ -51,7 +51,13 @@ router.get('/get_balance', async (req, res) => {
 });
 
 router.post('/add_contract', (req, res) => {
-  const { privateKey, toAddress, amount, contractCode } = req.body;
+  const {
+    privateKey,
+    toAddress,
+    amount,
+    contractCode,
+    contractFunctionsSchema
+  } = req.body;
   const key = ec.keyFromPrivate(privateKey);
   const walletAddress = key.getPublic('hex');
   var fixedContract = `(${contractCode})`;
@@ -60,7 +66,8 @@ router.post('/add_contract', (req, res) => {
     toAddress,
     Number(amount),
     eval(fixedContract),
-    contractCode
+    contractCode,
+    contractFunctionsSchema
   );
   tx.signTransaction(key);
   coin.addTransaction(tx);
@@ -84,6 +91,7 @@ router.post('/contract_set', (req, res) => {
     walletAddress,
     toAddress,
     Number(amount),
+    null,
     null,
     null,
     contractHash,
