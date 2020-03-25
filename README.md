@@ -41,23 +41,6 @@ body = {
   privateKey = xxxxxxxxxx
   toAddress = public key goes here
   amount = 10
-  contractCode? = "class Greeting {
-      greeting;
-      constructor() {
-        this.greeting = 'Hello World!';
-      }
-      applyParameters(greeting) {
-        this.greeting = greeting ? greeting : this.greeting;
-      }
-      setGreeting(greeting) {
-        this.greeting = greeting ? greeting : this.greeting;
-      }
-      getGreeting() {
-        return this.greeting;
-      }
-    }"
-  contractHash? = xxxxxxxxxx
-  contractFunction? = setGreeting('Hey Joey!!!')
 }
 ```
 
@@ -69,7 +52,7 @@ body = {
   privateKey = xxxxxxxxxx
   toAddress = public key goes here
   amount = 10
-  contractCode? = "class Greeting {
+  contractCode = "class Greeting {
       greeting;
       constructor() {
         this.greeting = 'Hello World!';
@@ -95,8 +78,8 @@ body = {
   privateKey = xxxxxxxxxx
   toAddress = public key goes here
   amount = 10
-  contractHash? = xxxxxxxxxx
-  contractFunction? = setGreeting('Hey Joey!!!')
+  contractHash = xxxxxxxxxx
+  contractFunction = setGreeting('Hey Joey!!!')
 }
 ```
 

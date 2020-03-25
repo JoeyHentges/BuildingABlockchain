@@ -109,7 +109,6 @@ router.post('/add_transaction', (req, res) => {
     message: 'Successfully added a transaction!',
     transactionHash: tx.hash
   });
-  return;
 });
 
 router.get('/replace_chain', async (req, res) => {
