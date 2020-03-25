@@ -52,21 +52,54 @@ body = {
   privateKey = xxxxxxxxxx
   toAddress = public key goes here
   amount = 10
-  contractCode = "class Greeting {
-      greeting;
+  contractCode = "class Article {
       constructor() {
-        this.greeting = 'Hello World!';
+        this.articles = [];
       }
-      applyParameters(greeting) {
-        this.greeting = greeting ? greeting : this.greeting;
+      addArticle(title, author, contents, tags) {
+        const article = {
+          title,
+          author,
+          contents,
+          tags
+        };
+        this.articles.push(article);
       }
-      setGreeting(greeting) {
-        this.greeting = greeting ? greeting : this.greeting;
+      getArticles() {
+        return this.articles;
       }
-      getGreeting() {
-        return this.greeting;
+      getArticleByTitle(title) {
+        for (const article of this.articles) {
+          if (article.title === title) {
+            return article;
+          }
+        }
+        return null;
+      }
+      getArticlesByAuthor(author) {
+        const articles = [];
+        for (let i = 0; i < this.articles.length; i += 1) {
+          if (this.articles[i].author === author) {
+            articles.push(this.articles[i]);
+          }
+        }
+        return articles;
+      }
+      setArticleAuthorByTitle(title, author) {
+        for (const article of this.articles) {
+          if (article.title === title) {
+            article.author = author;
+          }
+        }
       }
     }"
+  contractFunctionsSchema = {
+      "addArticle": true,
+      "getArticles": false,
+      "getArticleByTitle": true,
+      "getArticlesByAuthor": false,
+      "setArticleAuthorByTitle": true
+    }
 }
 ```
 
