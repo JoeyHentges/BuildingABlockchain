@@ -124,6 +124,17 @@ router.post('/contract_function', (req, res) => {
   const block = chain[blockIndex]; // get the block
   const transactionContractIndex = block.contracts[transactionHash]; // get the index of the transaction containing the contract
   const transactionContract = block.transactions[transactionContractIndex]; // get the transaction
+  // check if the contract function doesn't return anything - assuming this means it's a setter
+  if (
+    transactionContract.contract.contractFunctionAssigns[func.split('(')[0]] ===
+    true
+  ) {
+    res.status(200).send({
+      message:
+        'You cannot call functions that set variables! Use a transaction instead!'
+    });
+    return;
+  }
   // execute the contract and send the result
   res
     .status(200)
