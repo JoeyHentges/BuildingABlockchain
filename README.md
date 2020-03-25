@@ -96,7 +96,7 @@ body = {
   contractFunctionsSchema = {
       "addArticle": true,
       "getArticles": false,
-      "getArticleByTitle": true,
+      "getArticleByTitle": false,
       "getArticlesByAuthor": false,
       "setArticleAuthorByTitle": true
     }
