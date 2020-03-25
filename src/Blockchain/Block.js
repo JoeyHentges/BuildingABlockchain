@@ -8,12 +8,13 @@ class Block {
    * @param {*} data the data held within the block
    * @param {*} previousHash the hash of the previous block on the chain
    */
-  constructor(transactions, previousHash = '') {
+  constructor(transactions, previousHash = '', contracts = {}) {
     this.timestamp = new Date();
     this.transactions = transactions;
     this.previousHash = previousHash;
     this.hash = this.calculateHash(); // the hash of the block
     this.nonce = 0;
+    this.contracts = contracts; // a hashmap of contract hashs => they point to their transaction list index
   }
 
   /**
@@ -26,6 +27,7 @@ class Block {
         this.previousHash +
         this.timestamp +
         JSON.stringify(this.transactions) +
+        JSON.stringify(this.contracts) +
         this.nonce
     ).toString();
   }

@@ -41,28 +41,35 @@ class Blockchain {
       this.miningReward
     );
     this.pendingTransactions.push(rewardTx);
+    const contractIndices = {};
 
     // get the contracts (hashes) in the list of transactions and add them to the list of contracts in the blockchain contracts list
+    let index = 0;
     for (const transaction of this.pendingTransactions) {
       // if there is code for a contract
       if (transaction.contract) {
+        contractIndices[transaction.hash] = index;
         this.contracts[transaction.hash] = this.chain.length;
       } else if (transaction.contractFunction) {
         // if instead this transaction is a contract function
         const blockIndex = this.contracts[transaction.contractFunction.hash];
         const block = this.chain[blockIndex];
-        for (const trans of block.transactions) {
-          if (trans.hash === transaction.contractFunction.hash) {
-            const contract = trans.contract.contractInstance;
-            eval(`contract.${transaction.contractFunction.function}`);
-          }
-        }
+        const transactionContractIndex =
+          block.contracts[transaction.contractFunction.hash]; // get the index of the transaction containing the contract
+        const transactionContract =
+          block.transactions[transactionContractIndex]; // get the transaction
+        // execute the function on the contract
+        eval(
+          `transactionContract.contract.contractInstance.${transaction.contractFunction.function}`
+        );
       }
+      index += 1;
     }
 
     const block = new Block(
       this.pendingTransactions,
-      this.getLatestBlock().hash
+      this.getLatestBlock().hash,
+      contractIndices
     );
     block.mineBlock(this.difficulty);
 

@@ -118,17 +118,16 @@ router.get('/replace_chain', async (req, res) => {
 
 router.post('/contract_function', (req, res) => {
   const { transactionHash, func } = req.body;
-  const chain = coin.chain;
-  const contracts = coin.contracts;
-  const blockIndex = contracts[transactionHash];
-  const block = chain[blockIndex];
-  for (const transaction of block.transactions) {
-    if (transaction.hash === transactionHash) {
-      res
-        .status(200)
-        .send(eval(`transaction.contract.contractInstance.${func}`));
-    }
-  }
+  const chain = coin.chain; // get the chain
+  const contracts = coin.contracts; // get the contracts hashmap
+  const blockIndex = contracts[transactionHash]; // get the index of the block containing the specified contract
+  const block = chain[blockIndex]; // get the block
+  const transactionContractIndex = block.contracts[transactionHash]; // get the index of the transaction containing the contract
+  const transactionContract = block.transactions[transactionContractIndex]; // get the transaction
+  // execute the contract and send the result
+  res
+    .status(200)
+    .send(eval(`transactionContract.contract.contractInstance.${func}`));
 });
 
 module.exports.router = router;
