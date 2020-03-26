@@ -2,6 +2,9 @@ class Article {
   constructor() {
     this.articles = [];
   }
+  applyParameters(articles) {
+    this.artciles = artciles ? articles : this.artciles;
+  }
   addArticle(title, author, contents, tags) {
     const article = {
       title,
