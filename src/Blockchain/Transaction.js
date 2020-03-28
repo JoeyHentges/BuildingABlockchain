@@ -9,12 +9,41 @@ class Transaction {
    * @param {string} fromAddress the address the amount is transfering from
    * @param {string} toAddress the address the amount to transfering to
    * @param {float} amount the amount being transfered
+   * @param {class} contract the class of the contract
+   * @param {string} contractCode the code (string) of the contract
+   * @param {*} contractHash
+   * @param {*} contractFunction
    */
-  constructor(fromAddress, toAddress, amount, contractCode = null) {
+  constructor(
+    fromAddress,
+    toAddress,
+    amount,
+    contract = null,
+    contractCode = null,
+    contractFunctionSchema = null,
+    contractHash = null,
+    contractFunction = null
+  ) {
+    this.timestamp = new Date();
     this.fromAddress = fromAddress;
     this.toAddress = toAddress;
     this.amount = amount;
-    this.contractCode = contractCode;
+    // if there is contract code
+    if (contract) {
+      console.log(contractFunctionSchema);
+      this.contract = {
+        contractCode, // save a copy of the code
+        contractInstance: new contract(), // create an instance of the contract
+        contractFunctionAssigns: JSON.parse(contractFunctionSchema) // lay out of the functions that assign and don't assign - passed in by user
+      };
+    } else if (contractHash) {
+      // if instead there's a contract function call
+      this.contractFunction = {
+        hash: contractHash,
+        function: contractFunction
+      };
+    }
+    this.hash = this.calculateHash();
   }
 
   /**
@@ -26,6 +55,7 @@ class Transaction {
       this.fromAddress +
         this.toAddress +
         this.amount +
+        this.timestamp +
         JSON.stringify(this.contractCode)
     ).toString();
   }

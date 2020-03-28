@@ -4,7 +4,9 @@
   "description": "Building a blockchain from scratch in Javascript.",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "start": "set DEBUG=app & nodemon node server.js",
+    "prod": "node server.js"
   },
   "keywords": [
     "Blockchain",
@@ -13,8 +15,16 @@
   "author": "Joseph Hentges",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.19.0",
+    "chalk": "^3.0.0",
     "crypto-js": "^4.0.0",
+    "debug": "^4.1.1",
+    "dotenv": "^8.2.0",
     "elliptic": "^6.5.2",
-    "mocha": "^7.1.1"
+    "express": "^4.17.1",
+    "mocha": "^7.1.1",
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.2",
+    "superagent": "^5.2.2"
   }
 }
