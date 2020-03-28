@@ -134,10 +134,3 @@ body = {
   address = xxxxxxxxx
 }
 ```
-
-Export the Blockchain to a File - Exported to /\_\_BLOCKCHAIN\_\_\/blockchain.json
-
-```bash
-http://localhost:3000/export_chain
-body = { }
-```

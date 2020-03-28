@@ -35,13 +35,6 @@ router.get('/get_chain', (req, res) => {
   });
 });
 
-router.get('/export_chain', (req, res) => {
-  coin.exportToFile();
-  res.status(200).send({
-    message: 'Successfully exported chain to C://__BLOCKCHAIN__/'
-  });
-});
-
 router.get('/get_chain_length', (req, res) => {
   res.status(200).send({
     length: coin.chain.length

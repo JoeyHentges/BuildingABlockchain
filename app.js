@@ -29,6 +29,8 @@ try {
       contracts,
       network
     );
+  } else {
+    coin.replaceChain();
   }
 } catch (err) {
   console.error(err);
