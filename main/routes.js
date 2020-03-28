@@ -24,6 +24,13 @@ router.get('/get_chain', (req, res) => {
   });
 });
 
+router.get('/export_chain', (req, res) => {
+  coin.exportToFile();
+  res.status(200).send({
+    message: 'Successfully exported chain to C://__BLOCKCHAIN__/'
+  });
+});
+
 router.get('/get_chain_length', (req, res) => {
   res.status(200).send({
     length: coin.chain.length
@@ -124,7 +131,7 @@ router.get('/replace_chain', async (req, res) => {
   res.status(200).send('replaced chain ' + replaced);
 });
 
-router.post('/contract_function', (req, res) => {
+router.get('/contract_get', (req, res) => {
   const { transactionHash, func } = req.body;
   const chain = coin.chain; // get the chain
   const contracts = coin.contracts; // get the contracts hashmap

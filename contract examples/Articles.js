@@ -3,7 +3,7 @@ class Article {
     this.articles = [];
   }
   applyParameters(articles) {
-    this.artciles = artciles ? articles : this.artciles;
+    this.articles = articles;
   }
   addArticle(title, author, contents, tags) {
     const article = {
@@ -41,6 +41,15 @@ class Article {
       }
     }
   }
+}
+
+{
+  "applyParameters": true,
+  "addArticle": true,
+  "getArticles": false,
+  "getArticleByTitle": true,
+  "getArticlesByAuthor": false,
+  "setArticleAuthorByTitle": true
 }
 
 const articles = new Article();

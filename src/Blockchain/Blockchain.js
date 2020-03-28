@@ -1,17 +1,32 @@
 const superagent = require('superagent');
+const fs = require('fs');
 const { Block } = require('./Block');
 const { Transaction } = require('./Transaction');
+
+// Helper functions
+let json2array;
 
 /** @class The Blockchain. */
 class Blockchain {
   /** Create an instance of the Blockchain */
-  constructor() {
-    this.chain = [this.createGenesisBlock()]; // an array of blocks
-    this.difficulty = 2; // how many zero's are required to start the hash ex: difficulty 5 = 0x00000xxx
-    this.pendingTransactions = []; // the list of available transactions to be added to the blocks
-    this.miningReward = 100; // how many 'coins' should be given to the miner mining the Block
-    this.contracts = {}; // create an empty 'Hashmap' of contracts - used for easy picking of contracts from blocks - the block index they're in
-    this.network = ['http://localhost:3000'];
+  constructor(
+    chain = [this.createGenesisBlock()],
+    difficulty = 2,
+    pendingTransactions = [],
+    miningReward = 100,
+    contracts = {},
+    network = []
+  ) {
+    this.chain = chain; // an array of blocks
+    this.difficulty = difficulty; // how many zero's are required to start the hash ex: difficulty 5 = 0x00000xxx
+    this.pendingTransactions = pendingTransactions; // the list of available transactions to be added to the blocks
+    this.miningReward = miningReward; // how many 'coins' should be given to the miner mining the Block
+    this.contracts = contracts; // create an empty 'Hashmap' of contracts - used for easy picking of contracts from blocks - the block index they're in
+    this.network = network;
+    // the chain is not a default chain
+    if (chain.length > 1) {
+      this.updateChain(this.chain, this.contracts, this.pendingTransactions);
+    }
   }
 
   /** Create the first block on the blockchain - with basic data for values. */
@@ -164,12 +179,26 @@ class Blockchain {
         .get(`${nodeOfLargestChain}/get_chain`)
         .then(res => res);
       const nodeChain = JSON.parse(response.text).chain;
-      this.chain = nodeChain.chain;
-      this.contracts = nodeChain.contracts;
-      this.pendingTransactions = nodeChain.pendingTransactions;
-      this.setContractInstances();
+      this.updateChain(
+        nodeChain.chain,
+        nodeChain.contracts,
+        nodeChain.pendingTransactions
+      );
     }
     return nodeOfLargestChain !== null;
+  }
+
+  /**
+   * Update the current object with these values and create any contract instances.
+   * @param {array} chain
+   * @param {json} contracts
+   * @param {array} pendingTransactions
+   */
+  updateChain(chain, contracts, pendingTransactions) {
+    this.chain = chain;
+    this.contracts = contracts;
+    this.pendingTransactions = pendingTransactions;
+    this.setContractInstances();
   }
 
   /**
@@ -184,7 +213,7 @@ class Blockchain {
       for (const transaction of block.transactions) {
         if (transaction.hash === contractHash) {
           var fixedContract = `(${transaction.contract.contractCode})`;
-          const contractVariables = this.json2array(
+          const contractVariables = json2array(
             transaction.contract.contractInstance
           );
 
@@ -197,20 +226,40 @@ class Blockchain {
     }
   }
 
-  /**
-   * Helper function for setContractInstances()
-   * Convert a json object to an array of parameters.
-   * @param {*} json the json object
-   * @return {array} the list of values
-   */
-  json2array(json) {
-    var result = [];
-    var keys = Object.keys(json);
-    keys.forEach(function(key) {
-      result.push(json[key]);
-    });
-    return result;
+  /** Export the Blockchain to a file. */
+  exportToFile() {
+    const folderName = '__BLOCKCHAIN__/';
+    try {
+      if (!fs.existsSync(folderName)) {
+        fs.mkdirSync(folderName);
+      }
+      fs.writeFile(
+        `${folderName}blockchain.json`,
+        JSON.stringify(this, null, 2),
+        function(err) {
+          if (err) return console.log(err);
+          console.log('Successfully exported the blockchain!');
+        }
+      );
+    } catch (err) {
+      console.error(err);
+    }
   }
 }
+
+/**
+ * Helper function for setContractInstances()
+ * Convert a json object to an array of parameters.
+ * @param {*} json the json object
+ * @return {array} the list of values
+ */
+json2array = json => {
+  var result = [];
+  var keys = Object.keys(json);
+  keys.forEach(function(key) {
+    result.push(json[key]);
+  });
+  return result;
+};
 
 module.exports.Blockchain = Blockchain;

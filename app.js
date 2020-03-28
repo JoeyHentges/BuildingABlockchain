@@ -1,12 +1,38 @@
 // Requirements
 const express = require('express');
+const fs = require('fs');
 const morgan = require('morgan');
 const path = require('path');
 const bodyParser = require('body-parser');
 
 // Blockchain
 const { Blockchain } = require('./src/Blockchain/Blockchain');
-const coin = new Blockchain();
+let coin = new Blockchain();
+// check for an existing blockchain
+const blockchainPath = './__BLOCKCHAIN__/blockchain.json';
+try {
+  if (fs.existsSync(blockchainPath)) {
+    let rawdata = fs.readFileSync('./__BLOCKCHAIN__/blockchain.json');
+    const {
+      chain,
+      difficulty,
+      pendingTransactions,
+      miningReward,
+      contracts,
+      network
+    } = JSON.parse(rawdata);
+    coin = new Blockchain(
+      chain,
+      difficulty,
+      pendingTransactions,
+      miningReward,
+      contracts,
+      network
+    );
+  }
+} catch (err) {
+  console.error(err);
+}
 
 const app = express();
 

@@ -119,7 +119,7 @@ body = {
 Call a Contract Function
 
 ```bash
-http://localhost:3000/contract_function
+http://localhost:3000/contract_get
 body = {
   transactionHash = xxxxxxxxx
   func = getGreeting()
@@ -133,4 +133,11 @@ http://localhost:3000/get_balance
 body = {
   address = xxxxxxxxx
 }
+```
+
+Export the Blockchain to a File - Exported to /\_\_BLOCKCHAIN\_\_\/blockchain.json
+
+```bash
+http://localhost:3000/export_chain
+body = { }
 ```

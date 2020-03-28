@@ -30,7 +30,6 @@ class Transaction {
     this.amount = amount;
     // if there is contract code
     if (contract) {
-      console.log(contractFunctionSchema);
       this.contract = {
         contractCode, // save a copy of the code
         contractInstance: new contract(), // create an instance of the contract
