@@ -33,7 +33,8 @@ class Transaction {
       this.contract = {
         contractCode, // save a copy of the code
         contractInstance: new contract(), // create an instance of the contract
-        contractFunctionAssigns: JSON.parse(contractFunctionSchema) // lay out of the functions that assign and don't assign - passed in by user
+        contractFunctionAssigns: JSON.parse(contractFunctionSchema), // lay out of the functions that assign and don't assign - passed in by user
+        contractKey: fromAddress // to make changes to the contract the fromAddress must match the contractKey
       };
     } else if (contractHash) {
       // if instead there's a contract function call

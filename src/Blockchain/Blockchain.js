@@ -74,9 +74,14 @@ class Blockchain {
         const transactionContract =
           block.transactions[transactionContractIndex]; // get the transaction
         // execute the function on the contract
-        eval(
-          `transactionContract.contract.contractInstance.${transaction.contractFunction.function}`
-        );
+        try {
+          eval(
+            `transactionContract.contract.contractInstance.${transaction.contractFunction.function}`
+          );
+        } catch (err) {
+          // the function has an error - so remove it from the pendingTransactions arry
+          this.pendingTransactions.splice(index, 1);
+        }
       }
       index += 1;
     }

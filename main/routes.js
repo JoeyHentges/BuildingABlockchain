@@ -7,10 +7,21 @@ const ec = new EC('secp256k1');
 const { coin } = require('../app');
 const { Transaction } = require('../src/Blockchain/Transaction');
 
+router.get('/new_wallet', (req, res) => {
+  const key = ec.genKeyPair();
+  const privateKey = key.getPrivate('hex');
+  res.status(200).send({
+    message:
+      'Congraduations, you just generated a new wallet! Use your private key to mine blocks and submit transactions!',
+    privateKey
+  });
+});
+
 router.get('/mine_block', (req, res) => {
   const { minerAddress } = req.body;
   console.log(minerAddress);
   const block = coin.minePendingTransactions(minerAddress);
+  coin.exportToFile(); // export the new blockchain
   res.status(200).send({
     message: 'Congraduations, you just mined a block!',
     block
@@ -78,6 +89,7 @@ router.post('/add_contract', (req, res) => {
   );
   tx.signTransaction(key);
   coin.addTransaction(tx);
+  coin.exportToFile(); // export the new blockchain
   res.status(200).send({
     message: 'Successfully added a contract!',
     transactionHash: tx.hash
@@ -94,6 +106,23 @@ router.post('/contract_set', (req, res) => {
   } = req.body;
   const key = ec.keyFromPrivate(privateKey);
   const walletAddress = key.getPublic('hex');
+
+  // make a check to see if this private key - address can even make changes to the contract
+  // get the transaction
+  const chain = coin.chain; // get the chain
+  const contracts = coin.contracts; // get the contracts hashmap
+  const blockIndex = contracts[contractHash]; // get the index of the block containing the specified contract
+  const block = chain[blockIndex]; // get the block
+  const transactionContractIndex = block.contracts[contractHash]; // get the index of the transaction containing the contract
+  const transactionContract = block.transactions[transactionContractIndex]; // get the transaction
+  console.log(transactionContract);
+  // make the check
+  if (transactionContract.contract.contractKey !== walletAddress) {
+    res.status(401).send({
+      message: 'Wallet Address does not match the contract key!'
+    });
+  }
+
   const tx = new Transaction(
     walletAddress,
     toAddress,
@@ -106,6 +135,7 @@ router.post('/contract_set', (req, res) => {
   );
   tx.signTransaction(key);
   coin.addTransaction(tx);
+  coin.exportToFile(); // export the new blockchain
   res.status(200).send({
     message: 'Successfully commit a contract transaction!',
     contractHash: contractHash,
@@ -120,6 +150,7 @@ router.post('/add_transaction', (req, res) => {
   const tx = new Transaction(walletAddress, toAddress, Number(amount));
   tx.signTransaction(key);
   coin.addTransaction(tx);
+  coin.exportToFile(); // export the new blockchain
   res.status(200).send({
     message: 'Successfully added a transaction!',
     transactionHash: tx.hash
