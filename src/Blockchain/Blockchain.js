@@ -15,7 +15,7 @@ class Blockchain {
     pendingTransactions = [],
     miningReward = 100,
     contracts = {},
-    network = []
+    network = ['http://localhost:3001']
   ) {
     this.chain = chain; // an array of blocks
     this.difficulty = difficulty; // how many zero's are required to start the hash ex: difficulty 5 = 0x00000xxx

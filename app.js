@@ -29,9 +29,14 @@ try {
       contracts,
       network
     );
-  } else {
-    coin.replaceChain();
   }
+  // check to replace the base chain with any connected nodes
+  // then export the new chain if it is new
+  coin.replaceChain().then(res => {
+    if (res) {
+      coin.exportToFile();
+    }
+  });
 } catch (err) {
   console.error(err);
 }
