@@ -2,7 +2,6 @@
 
 ### Need to add
 
-1. When adding a contract, make a list of the function types. This could be part of the disallowing serter functions.
 1. Notify other nodes of minned blocks.
 1. When notifying other nodes, add their network nodes to your network
 1. Notify other nodes of new transactions
