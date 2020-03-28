@@ -15,7 +15,12 @@ class Blockchain {
     pendingTransactions = [],
     miningReward = 100,
     contracts = {},
-    network = ['http://localhost:3001']
+    network = [
+      {
+        url: 'http://localhost:3001', // the url
+        attempt: 0 // the number of times a connection attempt has been made - the is to remove any that haven't been connected to in a while
+      }
+    ]
   ) {
     this.chain = chain; // an array of blocks
     this.difficulty = difficulty; // how many zero's are required to start the hash ex: difficulty 5 = 0x00000xxx
@@ -170,13 +175,24 @@ class Blockchain {
     let chainLength = this.chain.length;
     let nodeOfLargestChain = null;
     for (const node of this.network) {
-      const response = await superagent
-        .get(`${node}/get_chain_length`)
-        .then(res => res);
-      const nodeChain = JSON.parse(response.text);
-      if (response.status === 200 && nodeChain.length > chainLength) {
-        chainLength = nodeChain.length;
-        nodeOfLargestChain = node;
+      try {
+        const response = await superagent
+          .get(`${node.url}/get_chain_length`)
+          .then(res => res);
+        const nodeChain = JSON.parse(response.text);
+        if (response.status === 200 && nodeChain.length > chainLength) {
+          chainLength = nodeChain.length;
+          nodeOfLargestChain = node.url;
+        }
+        node.attempt = 0;
+      } catch (err) {
+        node.attempt += 1;
+        // ignore - cannot connect to node
+        // check to see if to remove - unable to connect 100 times
+        if (node.attempt === 100) {
+          const index = this.network.indexOf(node);
+          this.network.splice(index, 1);
+        }
       }
     }
     if (nodeOfLargestChain !== null) {
