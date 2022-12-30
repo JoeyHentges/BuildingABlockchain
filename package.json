@@ -22,7 +22,7 @@
     "dotenv": "^8.2.0",
     "elliptic": "^6.5.2",
     "express": "^4.17.1",
-    "mocha": "^7.1.1",
+    "mocha": "^10.2.0",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.2",
     "superagent": "^5.2.2"
